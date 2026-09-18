@@ -1,0 +1,28 @@
+# Environments
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# API keys and secrets
+*.env
+
+# Python byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Node / JavaScript
+node_modules/
+
+# Generated files and temporary uploads
+Optimized_Application.docx
+temp_*
+*.docx
+
+# OS specific files
+.DS_Store
+Thumbs.db
