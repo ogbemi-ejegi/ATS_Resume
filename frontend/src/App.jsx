@@ -8,15 +8,18 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!file || !jobDescription) return alert("Please provide both a resume and a job description.")
-    
+
     setIsLoading(true)
-    
+
     const formData = new FormData()
     formData.append('job_description', jobDescription)
     formData.append('resume', file)
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/optimize', {
+      // This automatically uses your Render URL online, or localhost when you are testing on your PC
+      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
+      const response = await fetch(`${API_URL}/api/optimize`, {
         method: 'POST',
         body: formData,
       })
