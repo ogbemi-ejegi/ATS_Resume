@@ -55,14 +55,33 @@ def optimize_resume(
 
         print("DEBUG: Starting CrewAI kickoff...")
         # UPDATE THIS DICTIONARY TO MATCH YOUR TASKS
+       # 3. Run the AI process
+        print("DEBUG: Starting CrewAI kickoff...")
         my_crew.kickoff(inputs={
-            'resume_text': extracted_resume_text, # Changed this from resume_path
+            'resume_text': extracted_resume_text,
             'job_description': job_description
         })
         
-        output_filename = "Optimized_Application.docx"
-        print("DEBUG: Process complete, sending file back to frontend!")
+        # 4. BUILD AND SAVE THE WORD DOCUMENT
+        print("DEBUG: Building the final Word document...")
+        output_doc = docx.Document()
         
+        # Add the Cover Letter (from Task 3)
+        output_doc.add_heading('Cover Letter', level=1)
+        output_doc.add_paragraph(str(write_cover_letter_task.output))
+        
+        output_doc.add_page_break()
+        
+        # Add the Optimized Resume (from Task 2)
+        output_doc.add_heading('Optimized Resume', level=1)
+        output_doc.add_paragraph(str(rewrite_resume_task.output))
+        
+        # Save it to the server's hard drive
+        output_filename = "Optimized_Application.docx"
+        output_doc.save(output_filename)
+        
+        # 5. Return the generated document
+        print("DEBUG: Process complete, sending file back to frontend!")
         return FileResponse(
             path=output_filename, 
             filename=output_filename,
