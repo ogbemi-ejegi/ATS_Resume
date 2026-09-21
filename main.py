@@ -4,6 +4,7 @@ from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from crewai import Crew, Process
+import docx
 
 # Import your agents and tasks from your other files
 # (Adjust these import names if your files/variables are named differently)
@@ -34,13 +35,16 @@ def optimize_resume(
 ):
     print(f"DEBUG: Request received! File: {resume.filename}")
     
-    # 1. Save the uploaded resume temporarily so CrewAI can read it
     temp_resume_path = f"temp_{resume.filename}"
     with open(temp_resume_path, "wb") as buffer:
         shutil.copyfileobj(resume.file, buffer)
         
     try:
-        # 2. Initialize the Crew
+        # EXTRACT TEXT FROM THE DOCX FILE
+        print("DEBUG: Extracting text from document...")
+        doc = docx.Document(temp_resume_path)
+        extracted_resume_text = "\n".join([para.text for para in doc.paragraphs])
+
         print("DEBUG: Initializing CrewAI...")
         my_crew = Crew(
             agents=[ats_expert, resume_writer, cover_letter_crafter],
@@ -49,14 +53,13 @@ def optimize_resume(
             verbose=True
         )
 
-        # 3. Run the AI process
         print("DEBUG: Starting CrewAI kickoff...")
+        # UPDATE THIS DICTIONARY TO MATCH YOUR TASKS
         my_crew.kickoff(inputs={
-            'resume_path': temp_resume_path,
+            'resume_text': extracted_resume_text, # Changed this from resume_path
             'job_description': job_description
         })
         
-        # 4. Return the generated document
         output_filename = "Optimized_Application.docx"
         print("DEBUG: Process complete, sending file back to frontend!")
         
